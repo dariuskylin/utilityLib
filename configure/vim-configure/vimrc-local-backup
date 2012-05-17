@@ -1,0 +1,341 @@
+" ndsl uestc
+"
+" Maintainer:	ptz<ptz_007@uestc.edu.cn>, lilin<lilin@uestc.edu.cn>
+" Last change:	2010. 3. 10
+"
+" To use it, copy it to
+"     for Unix and OS/2:  ~/.vimrc
+"	      for Amiga:  s:.vimrc
+"  for MS-DOS and Win32:  $VIM\_vimrc
+"	    for OpenVMS:  sys$login:.vimrc
+
+
+" Use Vim settings, rather then Vi settings (much better!).
+" This must be first, because it changes other options as a side effect.
+" 非兼容模式
+set nocompatible 
+
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+if has("vms")
+  set nobackup		" do not keep a backup file, use versions instead
+else
+  set backup		" keep a backup file
+endif
+set history=50		" keep 50 lines of command line history
+set ruler		" show the cursor position all the time
+set showcmd		" display incomplete commands
+set incsearch		" do incremental searching
+
+" For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
+" let &guioptions = substitute(&guioptions, "t", "", "g")
+
+" Don't use Ex mode, use Q for formatting
+map Q gq
+
+" This is an alternative that also works in block mode, but the deleted
+" text is lost and it only works for putting the current register.
+"vnoremap p "_dp
+
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+  syntax on
+  set hlsearch
+endif
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+
+  " Enable file type detection.
+  " Use the default filetype settings, so that mail gets 'tw' set to 72,
+  " 'cindent' is on in C files, etc.
+  " Also load indent files, to automatically do language-dependent indenting.
+  filetype plugin indent on
+
+  " Put these in an autocmd group, so that we can delete them easily.
+  augroup vimrcEx
+  au!
+
+  " For all text files set 'textwidth' to 78 characters.
+  autocmd FileType text setlocal textwidth=78
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+  augroup END
+
+else
+
+  set autoindent		" always set autoindenting on
+
+autocmd BufRead *.c,*.cpp,*.h   set cindent
+
+endif " has("autocmd")
+
+set expandtab "使用space代替tab
+set shiftwidth=4 "自动缩进的宽度
+set tabstop=4
+set nu
+
+if filereadable("tags")
+    set tags=tags
+elseif filereadable("../tags")
+    set tags=../tags
+else
+    "echo "no tags"
+endif
+
+"Set mapleader
+let mapleader = ","
+let g:mapleader = ","
+
+""""""""""""""""""插件：taglist""""""""""""""""""""""""""""""""
+"let Tlist_Auto_Open = 1 "启动vim时，自动打开taglist窗口
+let Tlist_Ctags_Cmd = '/usr/bin/ctags'   "设置系统中ctags程序的位置
+let Tlist_Show_One_File = 1  "不同时显示多个文件的tag,只显示当前文件的tag 
+let Tlist_Exit_OnlyWindow = 1   "如果taglist窗口是最后一个窗口，则退出vim
+"let Tlist_Use_Right_Window = 1  "在右侧窗口中显示taglist窗口
+"let Tlist_GainFocus_On_ToggleOpen = 1 "使用TlistToggle打开taglist窗口时，输入焦点在taglist窗口中
+let Tlist_WinHeight = 50 
+let Tlist_WinWidth = 0
+"let Tlist_Sort_Type = "name" "使taglist以tag名字进行排序，缺省是按tag在文件中的顺序排序
+"map <silent> <F9> :TlistToggle<cr>
+
+
+"""""""""""""""""插件：winManager"""""""""""""""""""""""""""""""
+"设置显示内容
+let g:winManagerWindowLayout='FileExplorer|TagList'
+"如果关闭了所有文件只剩下该浏览窗口，则退出vim
+let g:persistentBehaviour=0
+"设置窗口宽度
+let g:winManagerWidth = 30
+"
+let g:defaultExplorer = 0
+nmap <C-W><C-F> :FirstExplorerWindow<cr>
+nmap <C-W><C-B> :BottomExplorerWindow<cr>
+nmap <silent> <F11> :WMToggle<cr> 
+nmap wm :WMToggle<cr>
+
+"多窗口切换
+map <silent><C-j> <C-W>j "jump to the below window
+map <silent><C-k> <C-W>k "jump to the above window
+map <silent><C-h> <C-W>h "jump to the left window 
+map <silent><C-l> <C-W>l "jump to the right window
+map <silent><F8> <C-W>t "jump to the top window
+
+"调整窗口大小
+map <silent><S-h> <C-W>+  "increase
+map <silent><S-l> <C-W>-  "decrease
+
+
+
+"""""""""""""""""插件：cscope""""""""""""""""""""""""""""""""""""
+if has("cscope")
+    set csprg=/usr/bin/cscope
+    set csto=0
+    set cst
+    set nocsverb
+    
+    "add cscope database file
+    if filereadable("cscope.out")
+    	cscope add cscope.out .
+    	set cscopequickfix=s-,c-,d-,i-,t-,e-
+    elseif $CSCOPE_DB != ""
+	cscope add $CSCOPE_DB
+    endif
+    set csverb
+endif
+
+
+"""""""""""""""""vimgdb""""""""""""""""""""""""""""""""""""
+let g:vimgdb_debug_file = ""
+map <silent> <C-g> :run macros/gdb_mappings.vim<cr>
+
+"""""""""""""""""a plugin""""""""""""""""""""""""""""""""""
+map <silent> <C-A> :A<CR>
+
+"""""""""""""""""插件：quickfix""""""""""""""""""""""""""""
+nmap <silent> <F5> :cn<cr>
+nmap <silent> <F6> :cp<cr>
+map <silent> <F10> :cw<CR> "新开窗口显示编译结果
+
+
+"find positions of sysbols like function name, enum, 
+nmap <leader>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+"find the defintion of a function 
+nmap <leader>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+"find functions calling this function
+nmap <leader>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+"search the given string
+nmap <leader>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+"grep
+nmap <leader>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+"find and open a file
+nmap <leader>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+"find functions called by this function
+nmap <leader>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+
+"""""""""""""minibuffer"""""""""""
+let g:miniBufExplMapWindowNavVim = 1 
+let g:miniBufExplMapWindowNavArrows = 1 
+let g:miniBufExplMapCTabSwitchBufs = 1 
+let g:miniBufExplModSelTarget = 1 
+
+map <silent><S-p> :bp<CR>
+map <silent><S-n> :bn<CR>
+
+"===============一键编译运行==========
+"说明：一键编译C++文件，并运行可执行文件，对于单个文件的小程序实用
+"map <silent> <F9> :call CompileRunGplusplus()<CR>
+func! CompileRunGplusplus()
+    exec "w"
+    exec "!g++ % -o %<"
+    exec "! ./%<"
+endfunc 
+
+func! ProduceTags()
+    if filereadable("tags")
+	exec "!rm tags"
+    endif    
+    if filereadable("cscope.out")
+	exec "!rm cscope.*"
+    endif
+    exec "!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q ."
+    exec "!cscope -Rbq"
+    cscope add cscope.out .
+endfunc
+
+"映射F7为make
+nmap <silent> <F7> :make<CR><CR>
+nmap <silent> <F9> :call CompileRunGplusplus()<CR>
+
+map <leader>w :w<CR>
+map <leader>q :q<CR>
+map <silent> <F2> :wall<CR>
+map <silent> <F3> / <C-R>=expand("<cword>")<CR><CR>
+map <silent> <F4> :quitall<CR>
+
+map <silent> <F12> :call ProduceTags()<CR><CR>
+"map <leader>n :n<CR>
+
+"文件改变时，重新载入文件
+map <silent> <C-F5> :e!<CR>
+
+
+"设置字体编码
+set fencs=utf-8,gbk,gb2312,gb18030,cs-bom,cp936,latin1
+set fenc=gbk  
+set enc=utf-8
+set tenc=utf-8
+
+"--------------------------------------
+"------------By Dariuskylin------------
+"-------------------------------------
+
+"设置快速注释（CTRL+C）
+"功能说明:加入或删除注释//
+"映射和绑定
+nmap <C-C> <Esc>:Setcomment<CR>
+imap <C-C> <Esc>:Setcomment<CR>
+vmap <C-C> <Esc>:SetcommentV<CR>
+command! -nargs=0 Setcomment call s:SET_COMMENT()
+command! -nargs=0 SetcommentV call s:SET_COMMENTV()
+
+"非视图模式下所调用的函数
+function! s:SET_COMMENT()
+    let lindex=line(".")
+    let str=getline(lindex)
+    "查看当前是否为注释行
+    let CommentMsg=s:IsComment(str)
+    call s:SET_COMMENTV_LINE(lindex,CommentMsg[1],CommentMsg[0])
+endfunction
+
+"视图模式下所调用的函数
+function! s:SET_COMMENTV()
+    let lbeginindex=line("'<") "得到视图中的第一行的行数
+    let lendindex=line("'>") "得到视图中的最后一行的行数
+    let str=getline(lbeginindex)
+    "查看当前是否为注释行
+    let CommentMsg=s:IsComment(str)
+    "为各行设置
+    let i=lbeginindex
+    while i<=lendindex
+         call s:SET_COMMENTV_LINE(i,CommentMsg[1],CommentMsg[0])
+        let i=i+1
+    endwhile
+endfunction
+
+"设置注释 
+"index:在第几行
+"pos:在第几列
+"comment_flag: 0:添加注释符 1:删除注释符
+function! s:SET_COMMENTV_LINE( index,pos, comment_flag )
+    let poscur = [0, 0,0, 0]
+    let poscur[1]=a:index
+    let poscur[2]=a:pos+1
+    call setpos(".",poscur) "设置光标的位置
+
+    if a:comment_flag==0
+        "插入//
+        exec "normal! i//"
+    else
+        "删除//
+        exec "normal! xx"
+    endif
+endfunction
+
+"查看当前是否为注释行并返回相关信息
+"str:一行代码
+function! s:IsComment(str)
+    let ret= [0, 0] "第一项为是否为注释行（0,1）,第二项为要处理的列，
+    let i=0
+    let strlen=len(a:str)
+    while i<strlen
+        "空格和tab允许为"//"的前缀
+        if !(a:str[i]==' ' ||    a:str[i] == '  ' )
+            let ret[1]=i
+            if a:str[i]=='/' && a:str[i+1]=='/'
+                let ret[0]=1
+            else
+                let ret[0]=0
+            endif
+            return ret
+        endif
+        let i=i+1
+    endwhile
+    return [0,0]  "空串处理
+endfunction
+
+"plugin doxygen
+let g:load_doxygen_syntax=1
+let g:DoxygenToolkit_briefTag_pre="@description "
+let g:DoxygenToolkit_paramTag_pre="@param "
+let g:DoxygenToolkit_returnTag="@returns "
+"let g:DoxygenToolkit_blockHeader="-------------------------------------------"
+"let g:DoxygenToolkit_blockFooter="-------------------------------------------"
+let g:DoxygenToolkit_authorName="Darius kylin"
+let g:DoxygenToolkit_licenseTag="Copyright (C) @Darius kylin  2012"
+
+
+"indent plugin
+let g:indent_guides_guide_size=1
+let g:indent_guides_auto_colors = 0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=red   ctermbg=3  
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=green ctermbg=4 
+
+"设置行下划线
+set cursorline
+
+"设置鼠标指示行行颜色
+"highlight CursorLine guibg=lightblue ctermbg=lightred
+
+"设置列线
+set colorcolumn=70
+colorscheme murphy

@@ -1,0 +1,20 @@
+改变用户vim配色方案
+
+vi ~/.vimrc
+
+加一行
+
+colorscheme murphy
+
+改变用户dir配色方案
+
+cp -af /etc/DIR_COLORS ~/.dir_colors (注意后面文件有点号，是隐藏文件)
+保存退出就好了。
+
+配色方案：
+
+/usr/share/vim/vim72/colors
+
+如果觉得murphy配色方案不好，可以看一下/usr/share/vim/vim72/colors，那里保存着很多的配色方案，你可以任选一个替换上面的murphy。
+
+
