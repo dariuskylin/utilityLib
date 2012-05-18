@@ -73,7 +73,7 @@ class ICarrier
          *
          * @return 
          */
-        virtual int attachManager(std::map< int,IState* > *mMgr) = 0;
+        virtual int attachToMgr(std::map< int,IState* > *mMgr) = 0;
         /**
          * @brief: 
          *
