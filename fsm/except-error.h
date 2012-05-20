@@ -19,7 +19,7 @@
 #define _EXCEPT_ERROR_HEAD_H
 #include<stdexcept>
 #include<string>
-class RunError : public std::runtime_error)
+class RunError : public std::runtime_error
 {
     public:
         RunError(const std::string &what)

@@ -25,13 +25,13 @@
 #include"functions.h"
 #include"interfaces.h"
 #include"except-error.h"
-
 using namespace std;
 
 class CBaseCarrier : public ICarrier
 {
     private:
           IState *m_state;
+    public:
           map< int,IState* > *m_fsmMgr;
     public:
           CBaseCarrier()
@@ -43,7 +43,7 @@ class CBaseCarrier : public ICarrier
           {
             if(m_state != NULL)
                 delete m_state;
-            if(m_fsmMgr != NULL)
+            if(m_fsmMgr != NULL) //should delete items,free all IState*
                 delete m_fsmMgr;
           }
          int attachToMgr(map<int,IState*> *mMgr)
@@ -68,14 +68,24 @@ class CBaseCarrier : public ICarrier
             state = (*m_fsmMgr)[destState];
             if(state == 0 )
                 return 0;
-            if( destState != m_state)
+            if( state != m_state)
             {
                 if( m_state != NULL)
-                    m_state->exit(this);
-                m_state = destState;
-                destState->init(this);
+                    m_state->exit_final(this);
+                m_state = state;
+                state->init(this);
             }
-            return process(this);
+           return state->process(this);
          }
 };
+#define FSM_INIT(name)  \
+    CBaseCarrier* fsm_##name = new CBaseCarrier();
+#define FSM_STATE_ADD(name,state,seqnum,init,process,end) \
+    IState* ##state = new IState((init),(process),(end));  \
+    fsm_##name->addState((seqnum),static_cast<IState *>(##state));
+    //(*(fsm_##name->m_fsmMgr))[seqnum] = ##state;
+#define FSM_RUN(name) \
+    fsm_##name->switchState(1);
+#define FSM_DESTROY(name) \
+    delete fsm_##name;
 #endif

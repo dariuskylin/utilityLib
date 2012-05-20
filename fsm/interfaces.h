@@ -19,8 +19,8 @@
 #define _INTERFACES_HEAD_H
 
 #include<map>
-
 class ICarrier;
+typedef int  (*do_task)(ICarrier *);
 /**
  * @brief: 
  */
@@ -28,6 +28,13 @@ class IState
 {
     public:
         IState() {}
+        IState(do_task ainit,do_task aprocess,
+                do_task aexit)
+        {
+            init=ainit;
+            process=aprocess;
+            exit_final=aexit;
+        }
         /**
          * @brief: 
          */
@@ -39,7 +46,8 @@ class IState
          *
          * @return 
          */
-        virtual int init(ICarrier* obj) = 0;
+    public:
+        do_task  init;
         /**
          * @brief: 
          *
@@ -47,7 +55,7 @@ class IState
          *
          * @return 
          */
-        virtual int process(ICarrier* obj) = 0;
+        do_task process;
         /**
          * @brief: 
          *
@@ -55,7 +63,7 @@ class IState
          *
          * @return 
          */
-        virtual int exit(ICarrier* obj) = 0;
+        do_task exit_final;
 };
 
 /**
