@@ -72,19 +72,19 @@ namespace NDSL
         }
         if(evt & kWriteEvent)
         {
-            FD_SET(handle,&m_wrtie_set);
+            FD_SET(handle,&m_write_set);
         }
         FD_SET(handle,&m_except_set);
         return 0;
     }
-    int SelectDemultplexer::UnrequestEvent(handle_t handle)
+    int SelectDemultiplexer::UnrequestEvent(handle_t handle)
     {
         FD_CLR(handle,&m_read_set);
         FD_CLR(handle,&m_write_set);
         FD_CLR(handle,&m_except_set);
         return 0;
     }
-    void SelectDemultplexer::Clear()
+    void SelectDemultiplexer::Clear()
     {
         FD_ZERO(&m_read_set);
         FD_ZERO(&m_write_set);

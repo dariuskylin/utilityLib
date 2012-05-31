@@ -39,9 +39,9 @@ char g_write_buffer[kBufferSize];
 class RequestHandler : public NDSL::EventHandler
 {
     public:
-        RequestHanler(NDSL::handle_t handle) :
-            EventHanler(),
-            m_handler(handle)
+        RequestHandler(NDSL::handle_t handle) :
+            EventHandler(),
+            m_handle(handle)
         {}
         virtual NDSL::handle_t GetHandle() const
         {
@@ -49,7 +49,7 @@ class RequestHandler : public NDSL::EventHandler
         }
         virtual void HandleWrite()
         {
-            memset(g_write_buff,0,sizeof(g_write_buffer));
+            memset(g_write_buffer,0,sizeof(g_write_buffer));
             int len = sprintf(g_write_buffer,"current time: %d\r\n",(int)time(NULL));
             len = write(m_handle,g_write_buffer,sizeof(g_write_buffer));
             if(len > 0)
@@ -95,11 +95,11 @@ class RequestHandler : public NDSL::EventHandler
         NDSL::handle_t m_handle;
 };
 ///////////////////////////////////////////////////////////////
-class TimeServer : public NDSL::EventHanler
+class TimeServer : public NDSL::EventHandler
 {
     public:
         TimeServer(const char *ip,unsigned int port) :
-            EventHanler(),
+            EventHandler(),
             m_ip(ip),
             m_port(port)
         {}
@@ -113,7 +113,7 @@ class TimeServer : public NDSL::EventHanler
             }
 
             struct sockaddr_in addr;
-            memset(addr,0,sizeof(addr));
+            memset(&addr,0,sizeof(addr));
             addr.sin_family = AF_INET;
             addr.sin_port = htons(m_port);
             addr.sin_addr.s_addr = inet_addr(m_ip.c_str());

@@ -18,6 +18,7 @@
 #ifndef _EVENT_DEMULTIPLEXER_H_
 #define _EVENT_DEMULTIPLEXER_H_
 #include<set>
+#include<map>
 #include"reactor.h"
 namespace NDSL
 {

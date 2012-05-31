@@ -54,7 +54,7 @@ class TimeClient : public NDSL::EventHandler
             addr.sin_family = AF_INET;
             addr.sin_port = htons(port);
             addr.sin_addr.s_addr = inet_addr(ip);
-            if(connect(m_handle,(socketaddr *)&addr,sizeof(addr))<0)
+            if(connect(m_handle,(struct sockaddr *)&addr,sizeof(addr))<0)
             {
                 ReportSocketError("connect");
                 return false;

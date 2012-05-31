@@ -20,7 +20,6 @@
 #include<stdint.h>
 #include<sys/epoll.h>
 #include<unistd.h>
-#define FD_SETSIZE 8192
 namespace NDSL
 {
     typedef unsigned int event_t;
