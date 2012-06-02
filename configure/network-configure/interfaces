@@ -1,0 +1,11 @@
+#pwd:/etc/network/interfaces
+
+auto lo
+iface lo inet loopback
+
+#The Primary Network Setting
+iface eth0 inet static
+address 192.168.1.137
+netmask 255.255.255.0
+gateway 192.168.1.1
+auto eth0
