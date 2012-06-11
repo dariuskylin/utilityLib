@@ -1,0 +1,60 @@
+/**
+ * @file test.cc
+ * @description
+ * 	unit test suites for mds project.
+ *
+ */
+
+#include <boost/test/included/unit_test.hpp>
+#include <boost/test/debug.hpp>
+
+using boost::unit_test::test_suite;
+using boost::debug::detect_memory_leaks;
+
+#include "MetaFunctionsTest.h"
+#include "ComponentTest.h"
+#include "FactoryTest.h"
+#include "SharedLibraryTest.h"
+#include "RegistryTest.h"
+
+#include "AddressTest.h"
+#include "FileTest.h"
+#include "SocketTest.h"
+#include "ThreadTest.h"
+#include "EpollTest.h"
+#include "TimerTest.h"
+
+#include "RpcTest.h"
+
+test_suite *init_unit_test_suite(int argc, char *argv[])
+{
+	// test suites for class Agent
+	test_suite *suites = BOOST_TEST_SUITE("Unit test for project xcom");
+	detect_memory_leaks(true);
+
+	try
+	{
+		// organize all test suites
+		suites->add(new MetaFunctionsTestSuite());
+		suites->add(new ComponentTestSuite());
+		suites->add(new FactoryTestSuite());
+		suites->add(new SharedLibraryTestSuite());
+		suites->add(new RegistryTestSuite());
+		suites->add(new Address4TestSuite());
+		suites->add(new AddressUnTestSuite());
+		suites->add(new FileTestSuite());
+		suites->add(new SocketTestSuite());
+		suites->add(new ThreadTestSuite());
+		suites->add(new EpollTestSuite());
+		suites->add(new TimerTestSuite());
+		suites->add(new RpcTestSuite());
+	}
+	catch (Exception &e)
+	{
+		cout << e << endl;
+	}
+
+	return suites;
+}
+
+

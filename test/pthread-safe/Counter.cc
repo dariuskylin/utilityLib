@@ -18,6 +18,7 @@
 #include<pthread.h>
 #include<boost/noncopyable.h>
 #include<stdint.h>
+#include<stddef.h>
 class Counter : boost::noncopyable
 {
     public:

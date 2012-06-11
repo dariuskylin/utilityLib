@@ -1,0 +1,231 @@
+/**
+ * @file MetaFunctionsTest.h
+ * @comment
+ * 
+ * @author niexw
+ */
+
+#ifndef _XCOM_META_FUNCTIONS_TEST_H_
+#define _XCOM_META_FUNCTIONS_TEST_H_
+
+#include "Component.h"
+#include <boost/mpl/at.hpp>
+
+using xcom::IID;
+using xcom::IUnknown;
+using xcom::IFactory;
+using xcom::Str2Uuid;
+
+using xcom::Interfaces;
+using xcom::Policies;
+using xcom::meta::applyPolicy;
+using xcom::meta::addIfNotExisted;
+using xcom::meta::shrinkInterfaces;
+using xcom::meta::sortInterfaceSequence;
+using xcom::meta::derivedInSeq;
+using xcom::meta::derivedMap;
+using xcom::meta::ComponentTraits;
+using xcom::meta::OffsetOfInterface;
+
+using boost::is_same;
+using boost::mpl::int_;
+using boost::mpl::at_c;
+using boost::mpl::size;
+
+#include <iostream>
+#include <typeinfo>
+using std::cout;
+using std::endl;
+
+BEGIN_DECLARE_INTERFACE(IA, IUnknown)
+	virtual int add(int x, int y) = 0;
+END_DECLARE_INTERFACE(IA)
+
+BEGIN_DECLARE_INTERFACE(IB, IA)
+	virtual int sub(int x, int y) = 0;
+END_DECLARE_INTERFACE(IB)
+
+BEGIN_DECLARE_INTERFACE(IC, IA)
+	virtual int mul(int x, int y) = 0;
+END_DECLARE_INTERFACE(IC)
+
+BEGIN_DECLARE_INTERFACE(ID, IUnknown)
+	virtual int div(int x, int y) = 0;
+END_DECLARE_INTERFACE(ID)
+
+DEFINE_INTERFACE_ID(IA, "662108f8-a65d-4ec7-882c-368fb8de7552");
+DEFINE_INTERFACE_ID(IB, "9a8dcdfe-20d6-4513-9f8a-ac8850eaf509");
+DEFINE_INTERFACE_ID(IC, "10ff084e-4e19-45bf-bc9c-90deeb4b9bf4");
+DEFINE_INTERFACE_ID(ID, "b1845fdb-bb6d-4d22-88cb-93fc46839e30");
+
+template <typename Class, typename B>
+struct Add : public B
+{ int add(int x, int y) { return x+y; } };
+
+template <typename Class, typename B>
+struct Mul : public B
+{ int mul(int x, int y) { return x*y; } };
+
+template <typename Class, typename B>
+struct Sub : public B
+{ int sub(int x, int y) { return x-y; } };
+
+template <typename Class, typename B>
+struct PD : public B
+{};
+
+class X;
+typedef Policies<X, Mul, Add, Sub>::type PSeq;
+typedef Interfaces<IB, ID, IA, IC>::type ISeq;
+typedef addIfNotExisted<ISeq, IFactory>::type ISeq1;
+typedef addIfNotExisted<ISeq1, IUnknown>::type ISeq2;
+
+class MetaFunctionsTestCases
+{
+public:
+	void testPolicies()
+	{
+		BOOST_CHECK((size<PSeq>::value == 3));
+		BOOST_CHECK((is_same<at_c<PSeq, 0>::type, applyPolicy<X, Mul> >::value));
+		BOOST_CHECK((is_same<at_c<PSeq, 1>::type, applyPolicy<X, Add> >::value));
+		BOOST_CHECK((is_same<at_c<PSeq, 2>::type, applyPolicy<X, Sub> >::value));
+	}
+
+	void testInterfaces()
+	{
+		BOOST_CHECK((size<ISeq>::value == 4));
+		BOOST_CHECK((is_same<at_c<ISeq, 0>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<ISeq, 1>::type, ID>::value));
+		BOOST_CHECK((is_same<at_c<ISeq, 2>::type, IA>::value));
+		BOOST_CHECK((is_same<at_c<ISeq, 3>::type, IC>::value));
+	}
+
+	void testAddIfNotExisted()
+	{
+		BOOST_CHECK((size<ISeq2>::value == 6));
+		BOOST_CHECK((is_same<at_c<ISeq2, 0>::type, IUnknown>::value));
+		BOOST_CHECK((is_same<at_c<ISeq2, 1>::type, IFactory>::value));
+		BOOST_CHECK((is_same<at_c<ISeq2, 2>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<ISeq2, 3>::type, ID>::value));
+		BOOST_CHECK((is_same<at_c<ISeq2, 4>::type, IA>::value));
+		BOOST_CHECK((is_same<at_c<ISeq2, 5>::type, IC>::value));
+
+		typedef addIfNotExisted<ISeq1, IA>::type ISeq3;
+		BOOST_CHECK((size<ISeq2>::value == 6));
+	}
+
+	void testSortInterfaceSequence()
+	{
+		typedef sortInterfaceSequence<ISeq2>::type Result;
+		// IUnknown IFacotry IA IB ID IC
+		BOOST_CHECK((size<Result>::value == 6));
+		BOOST_CHECK((is_same<at_c<Result, 0>::type, IUnknown>::value));
+		BOOST_CHECK((is_same<at_c<Result, 1>::type, IFactory>::value));
+		BOOST_CHECK((is_same<at_c<Result, 2>::type, IA>::value));
+		BOOST_CHECK((is_same<at_c<Result, 3>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<Result, 4>::type, ID>::value));
+		BOOST_CHECK((is_same<at_c<Result, 5>::type, IC>::value));
+
+		typedef boost::mpl::vector<IC> ISeq10;
+		typedef sortInterfaceSequence<ISeq10>::type Result1;
+		BOOST_CHECK((is_same<Result1, boost::mpl::vector<IC> >::value));
+	}
+
+	void testShrinkInterfaces()
+	{
+		typedef shrinkInterfaces<ISeq2>::type Result;
+		// IFactory, IB, ID, IC
+		BOOST_CHECK((size<Result>::value == 4));
+		BOOST_CHECK((is_same<at_c<Result, 0>::type, IFactory>::value));
+		BOOST_CHECK((is_same<at_c<Result, 1>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<Result, 2>::type, ID>::value));
+		BOOST_CHECK((is_same<at_c<Result, 3>::type, IC>::value));
+	}
+
+	void testDerivedInSeq()
+	{
+		typedef ComponentTraits<ISeq, PSeq>::InheritISeq Result;
+		// IFactory, IB, ID, IC
+		BOOST_CHECK((is_same<derivedInSeq<Result, IUnknown>::type, IB>::value));
+		//BOOST_CHECK((is_same<derivedInSeq<Result, IFactory>::type, IFactory>::value));
+		BOOST_CHECK((is_same<derivedInSeq<Result, IA>::type, IB>::value));
+		BOOST_CHECK((is_same<derivedInSeq<Result, IB>::type, IB>::value));
+		BOOST_CHECK((is_same<derivedInSeq<Result, IC>::type, IC>::value));
+		BOOST_CHECK((is_same<derivedInSeq<Result, ID>::type, ID>::value));
+	}
+
+	void testDerivedMap()
+	{
+		typedef ComponentTraits<ISeq, PSeq>::CompletedISeq Seq1;
+		typedef ComponentTraits<ISeq, PSeq>::InheritISeq Seq2;
+
+		typedef derivedMap<Seq1, Seq2>::type result;
+		BOOST_CHECK((is_same<at_c<result, 0>::type, IB>::value));
+		//BOOST_CHECK((is_same<at_c<result, 1>::type, IFactory>::value));
+		BOOST_CHECK((is_same<at_c<result, 1>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<result, 2>::type, ID>::value));
+		BOOST_CHECK((is_same<at_c<result, 3>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<result, 4>::type, IC>::value));
+	}
+
+	void testComponentTraits()
+	{
+		typedef ComponentTraits<ISeq, PSeq>::InheritISeq Result;
+		// IFactory, IB, ID, IC
+		BOOST_CHECK((size<Result>::value == 3));
+		//BOOST_CHECK((is_same<at_c<Result, 0>::type, IFactory>::value));
+		BOOST_CHECK((is_same<at_c<Result, 0>::type, IB>::value));
+		BOOST_CHECK((is_same<at_c<Result, 1>::type, ID>::value));
+		BOOST_CHECK((is_same<at_c<Result, 2>::type, IC>::value));
+
+		typedef ComponentTraits<ISeq, PSeq>::InheritIBase IBase;
+		// IFactory, IB, ID, IC
+		IBase *p = (IBase *)0x8;
+		//BOOST_CHECK(((long)static_cast<IFactory*>(p) == 0x8));
+		BOOST_CHECK(((long)static_cast<IB*>(p) == 0x8));
+		BOOST_CHECK(((long)static_cast<ID*>(p) == 0x8+sizeof(void*)));
+		BOOST_CHECK(((long)static_cast<IC*>(p) == 0x8+sizeof(void*)*2));
+
+		typedef ComponentTraits<ISeq, PSeq>::InheritBase Base;
+		// IFactory, IB, ID, IC
+		Base *p1 = (Base *)0x8;
+		//BOOST_CHECK(((long)static_cast<IFactory*>(p1) == 0x8));
+		BOOST_CHECK(((long)static_cast<IB*>(p1) == 0x8));
+		BOOST_CHECK(((long)static_cast<ID*>(p1) == 0x8+sizeof(void*)));
+		BOOST_CHECK(((long)static_cast<IC*>(p1) == 0x8+sizeof(void*)*2));
+	}
+
+	void testOffsetOfInterface()
+	{
+		typedef ComponentTraits<ISeq, PSeq>::InheritISeq Result;
+		// IFactory, IB, ID, IC
+		BOOST_CHECK((OffsetOfInterface<Result, IUnknown>::value == 0));
+		//BOOST_CHECK((OffsetOfInterface<Result, IFactory>::value == 0));
+		BOOST_CHECK((OffsetOfInterface<Result, IA>::value == 0));
+		BOOST_CHECK((OffsetOfInterface<Result, IB>::value == 0));
+		BOOST_CHECK((OffsetOfInterface<Result, IC>::value == sizeof(void*)*2));
+		BOOST_CHECK((OffsetOfInterface<Result, ID>::value == sizeof(void*)));
+	}
+};
+
+class MetaFunctionsTestSuite : public test_suite
+{
+public:
+	MetaFunctionsTestSuite() : test_suite("MetaFunctionsTestSuite")
+	{
+		boost::shared_ptr<MetaFunctionsTestCases> instance(new MetaFunctionsTestCases());
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testPolicies, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testInterfaces, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testAddIfNotExisted, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testSortInterfaceSequence, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testShrinkInterfaces, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testDerivedInSeq, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testDerivedMap, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testComponentTraits, instance));
+		add(BOOST_CLASS_TEST_CASE(&MetaFunctionsTestCases::testOffsetOfInterface, instance));
+	}
+};
+
+
+
+#endif /* _XCOM_META_FUNCTIONS_TEST_H_ */

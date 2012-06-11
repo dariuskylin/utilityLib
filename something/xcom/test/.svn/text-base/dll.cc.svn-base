@@ -1,0 +1,11 @@
+/**
+ * @file dll.cc
+ * @comment
+ *
+ * @author niexw
+ */
+
+int addx(int x, int y)
+{
+	return x+y+1;
+}

@@ -1,0 +1,85 @@
+/**
+ * @file RegistryTest.h
+ * @comment
+ * 
+ * @author niexw
+ */
+
+#ifndef _XCOM_REGISTRYTEST_H_
+#define _XCOM_REGISTRYTEST_H_
+
+#include "Registry.h"
+
+using xcom::IID_IRegistry;
+using xcom::IRegistry;
+using xcom::PRegistry;
+using xcom::ComponentRecord;
+using xcom::CLSID_SharedLibrary;
+
+class C31;
+typedef Interfaces<IRegistry>::type ISeq31;
+typedef Policies<C31, PUnknown, PFactory, PRegistry>::type PSeq31;
+typedef ComponentTraits<ISeq31, PSeq31> Traits31;
+class C31 : public Component<Traits31>
+{ };
+
+DEFINE_CLASS_ID(C31, "ba93a7cb-0f50-488d-bcfe-35d63bbfa05e");
+
+class RegistryTestCases
+{
+protected:
+	IFactory *pf;
+	IRegistry *pr;
+
+public:
+	RegistryTestCases() : pf(NULL), pr(NULL)
+	{ }
+	~RegistryTestCases()
+	{ }
+
+	void testCreate()
+	{
+		IFactory* pf = C31::getObjectFactory();
+		BOOST_CHECK(pf != NULL);
+
+		ClsID const* cid = C31::getClassID();
+		BOOST_CHECK((*cid == CLSID_C31));
+
+		long ret = pf->createInstance(NULL, IID_IRegistry, (void**)&pr);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((pr != NULL));
+	}
+
+	void testAddRecord()
+	{
+		ComponentRecord re(CLSID_SharedLibrary, "/usr/lib");
+		BOOST_CHECK((pr->addRecord(re)));
+		re.path.clear();
+		BOOST_CHECK((pr->lookup(re)));
+		BOOST_CHECK((re.path == "/usr/lib"));
+	}
+
+	void testDeleteRecord()
+	{
+		ComponentRecord re(CLSID_SharedLibrary);
+		BOOST_CHECK((pr->delRecord(re)));
+		BOOST_CHECK((!pr->lookup(re)));
+
+		pr->release();
+		system("rm -fr xcom.db");
+	}
+};
+
+class RegistryTestSuite : public test_suite
+{
+public:
+	RegistryTestSuite() : test_suite("RegistryTestSuite")
+	{
+		boost::shared_ptr<RegistryTestCases> instance(new RegistryTestCases());
+		add(BOOST_CLASS_TEST_CASE(&RegistryTestCases::testCreate, instance));
+		add(BOOST_CLASS_TEST_CASE(&RegistryTestCases::testAddRecord, instance));
+		add(BOOST_CLASS_TEST_CASE(&RegistryTestCases::testDeleteRecord, instance));
+	}
+};
+
+#endif /* _XCOM_REGISTRYTEST_H_ */

@@ -1,0 +1,167 @@
+/**
+ * @file Policies.h
+ * @comment
+ * 
+ * @author niexw
+ */
+#ifndef _XCOM_POLICIES_H_
+#define _XCOM_POLICIES_H_
+
+#include "Component.h"
+#include <boost/mpl/for_each.hpp>
+#include <boost/type_traits/add_pointer.hpp>
+#include <boost/type_traits/remove_pointer.hpp>
+#include <set>
+
+#define DEFINE_POLICY(Class, Pol)		  					\
+	template <typename Class, typename B> 					\
+	class Pol : public B
+
+#define DEFINE_CLASS_ID(com, iid)							\
+	xcom::ClsID const CLSID_##com = xcom::Str2Uuid()(iid);	\
+	template <> xcom::ClsID const *xcom::PFactory<com		\
+		, xcom::meta::PolicyBase<com::Traits				\
+			, xcom::applyPolicy<com							\
+				, xcom::PFactory> >::type>::clsid_ = &CLSID_##com;
+
+namespace xcom
+{
+
+using meta::OffsetOfInterface;
+using meta::ComponentTraits;
+
+struct InfoMapEntry
+{
+	InterfaceInfo const* interface;
+	long offset;
+
+	InfoMapEntry(InterfaceInfo const* i, long o)
+		: interface(i), offset(o)
+	{ }
+};
+
+template <typename Class>
+struct QueryPolicy
+{
+	struct Comp {
+		bool operator()(InfoMapEntry const &x, InfoMapEntry const &y) const
+		{ return (*x.interface->iid < *y.interface->iid); }
+	};
+	typedef std::set<InfoMapEntry, Comp> InfoMap;
+
+	InfoMap iset_;
+
+	struct insertor
+	{
+		InfoMap *pset;
+		insertor(InfoMap *p) : pset(p) {}
+
+		template <typename T>
+		void operator()(T)
+		{
+			typedef typename boost::remove_pointer<T>::type IType;
+			typedef OffsetOfInterface
+					< typename Class::Traits::InheritISeq::type
+					, IType> OffsetType;
+			InterfaceInfo const *p = IType::interfaceInfo_();
+			InfoMapEntry xinfo = { p, OffsetType::value };
+			pset->insert(xinfo);
+		}
+	};
+
+	void initialize()
+	{
+		boost::mpl::for_each<typename Class::Traits::CompletedISeq
+			, boost::add_pointer
+				<boost::mpl::placeholders::_> >(insertor(&iset_));
+	}
+};
+
+DEFINE_POLICY(Class, PUnknown)
+{
+protected:
+	long refcnt_;
+	QueryPolicy<Class> qp_;
+
+public:
+	PUnknown() : refcnt_(0) { qp_.initialize(); }
+
+	// IUnknown
+	long query(const IID &iid, void **ptr)
+	{
+		InterfaceInfo info = { NULL, &iid };
+		InfoMapEntry entry(&info, 0);
+		typename QueryPolicy<Class>::InfoMap::iterator it =
+				qp_.iset_.find(entry);
+		if (it != qp_.iset_.end())
+		{
+			*ptr = (void*)((long)this + it->offset);
+			addref();
+			return SUCCESS;
+		}
+		else
+			return ERROR;
+	}
+
+	long addref() { return ++refcnt_; }
+	long release()
+	{
+		long ret = --refcnt_;
+		if (ret <= 0)
+			delete static_cast<Class*>(this);
+		return ret;
+	}
+};
+
+template<typename Class>
+class Factory : public Component<ComponentTraits
+	< typename Interfaces<IFactory>::type
+	, typename Policies<Factory<Class>, PUnknown>::type> >
+{
+public:
+	long createInstance(IUnknown *pUnkownOuter, const IID &iid, void **ppv)
+	{
+		if (pUnkownOuter != NULL)
+			return ERROR;
+		Class *p = new Class;
+		long ret = p->query(iid, ppv);
+		if (ret != SUCCESS)
+			p->release();
+		return ret;
+	}
+
+	long lockServer(bool bLock)
+	{
+		// @TODO
+		return 0;
+	}
+
+	long release()
+	{
+		if (--this->refcnt_ <= 0)
+			this->refcnt_ = 0;	// can not delete the factory
+		return this->refcnt_;
+	}
+};
+
+DEFINE_POLICY(Class, PFactory)
+{
+protected:
+	static Factory<Class> factory_;
+	static ClsID const *clsid_;
+
+public:
+	static IFactory* getObjectFactory()
+	{ return &factory_; }
+	static void getClassID(ClsID &clsid)
+	{ clsid = *clsid_; }
+	static ClsID const* getClassID()
+	{ return clsid_; }
+};
+
+template <typename Class, typename B>
+Factory<Class> PFactory<Class, B>::factory_;
+
+
+}; // namespace xcom
+#endif /* _XCOM_POLICIES_H_ */

@@ -1,0 +1,74 @@
+/**
+ * @file Interfaces.h
+ * @comment
+ * define some basic interfaces.
+ *
+ * @author niexw
+ */
+
+#ifndef _XCOM_INTERFACES_H_
+#define _XCOM_INTERFACES_H_
+
+#include "Defines.h"
+#include <string>
+
+//
+// all interfaces must be defined with BEGIN_INTERFACE and END_INTERFACE macros.
+// the destructor of interfaces is protected, which means that we can not delete
+// an object with the delete operator.
+//
+#define BEGIN_DECLARE_INTERFACE(inf, pinf)							\
+	extern const IID IID_##inf;										\
+	struct XCOM_NO_VTABLE inf : public pinf							\
+	{																\
+	public:															\
+		static const xcom::InterfaceInfo* interfaceInfo_()			\
+		{															\
+			static const xcom::InterfaceInfo info_ = { #inf,		\
+				&IID_##inf };										\
+			return &info_;											\
+		}															\
+		/**/
+
+#define END_DECLARE_INTERFACE(inf)									\
+	protected:														\
+		virtual ~inf() {}											\
+	};
+
+#define DEFINE_INTERFACE_ID(inf, iid)								\
+	const IID IID_##inf = Str2Uuid()(iid);
+
+namespace xcom
+{
+
+struct InterfaceInfo
+{ const char *name; const IID *iid; };
+
+extern const IID IID_IUnknown;
+struct XCOM_NO_VTABLE IUnknown
+{
+public:
+	static const InterfaceInfo* interfaceInfo_()
+	{
+		static InterfaceInfo info_ = { "IUnknown", &IID_IUnknown };
+		return &info_;
+	}
+
+	virtual long query(const IID &iid, void **ptr) = 0;
+	virtual long addref() = 0;
+	virtual long release() = 0;
+
+protected:
+	virtual ~IUnknown() {}
+};
+
+BEGIN_DECLARE_INTERFACE(IFactory, IUnknown)
+	virtual long createInstance(IUnknown *pUnkownOuter,
+									const IID &iid, void **ppv) = 0;
+	virtual long lockServer(bool bLock) = 0;
+END_DECLARE_INTERFACE(IFactory)
+
+
+}; // namespace xcom
+
+#endif // _XCOM_INTERFACES_H_

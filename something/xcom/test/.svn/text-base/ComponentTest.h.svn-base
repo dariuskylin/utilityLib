@@ -1,0 +1,118 @@
+/**
+ * @file ComponentTest.h
+ * @comment
+ * 
+ * @author niexw
+ */
+
+#ifndef _XCOM_COMPONENT_TEST_H_
+#define _XCOM_COMPONENT_TEST_H_
+
+#include "Policies.h"
+
+using xcom::SUCCESS;
+using xcom::ERROR;
+using xcom::PUnknown;
+using xcom::Component;
+
+
+using xcom::IID_IUnknown;
+using xcom::IID_IFactory;
+
+typedef Policies<X, PUnknown, Add, Mul, Sub>::type PSeq20;
+typedef ComponentTraits<ISeq, PSeq20> Traits;
+class X : public Component<Traits>
+{
+public:
+	int div(int x, int y) { return x/y; }
+#if 0
+	long createInstance(IUnknown *pUnkownOuter, const IID &iid, void **ppv)
+	{ return 0; }
+	long lockServer(bool bLock)
+	{ return 0; }
+#endif
+};
+
+class ComponentTestCases
+{
+protected:
+	X x;
+
+public:
+	void testCrtp()
+	{
+		BOOST_CHECK((x.add(5, 2) == 7));
+		BOOST_CHECK((x.mul(3, 2) == 6));
+		BOOST_CHECK((x.sub(9, 3) == 6));
+		BOOST_CHECK((x.div(7, 2) == 3));
+	}
+
+	void testRefCnt()
+	{
+		BOOST_CHECK((x.addref() == 1));
+		BOOST_CHECK((x.addref() == 2));
+		BOOST_CHECK((x.release() == 1));
+	}
+
+	void testQuery()
+	{
+		IID iid = IID_IB;
+		IB *p = NULL;
+		long ret = x.query(iid, (void **)&p);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((p != NULL));
+		BOOST_CHECK((p->add(3, 5) == 8));
+		BOOST_CHECK((p->sub(3, 4) == -1));
+		ret = p->release();
+		BOOST_CHECK((ret == 1));
+
+		iid = IID_IA;
+		IA *pa = NULL;
+		ret = x.query(iid, (void **)&pa);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((pa != NULL));
+		BOOST_CHECK((pa->add(2, 5) == 7));
+		ret = pa->release();
+		BOOST_CHECK((ret == 1));
+
+		iid = IID_IC;
+		IC *pc = NULL;
+		ret = x.query(iid, (void **)&pc);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((pc != NULL));
+		BOOST_CHECK((pc->mul(3, 6) == 18));
+		ret = pc->release();
+		BOOST_CHECK((ret == 1));
+
+		iid = IID_ID;
+		ID *pd = NULL;
+		ret = x.query(iid, (void **)&pd);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((pd != NULL));
+		BOOST_CHECK((pd->div(3, 5) == 0));
+		ret = pd->release();
+		BOOST_CHECK((ret == 1));
+
+		iid = IID_IUnknown;
+		IUnknown *pu = NULL;
+		ret = x.query(iid, (void **)&pu);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((pu != NULL));
+		ret = pu->release();
+		BOOST_CHECK((ret == 1));
+	}
+};
+
+class ComponentTestSuite : public test_suite
+{
+public:
+	ComponentTestSuite() : test_suite("ComponentTestSuite")
+	{
+		boost::shared_ptr<ComponentTestCases> instance(new ComponentTestCases());
+		add(BOOST_CLASS_TEST_CASE(&ComponentTestCases::testCrtp, instance));
+		add(BOOST_CLASS_TEST_CASE(&ComponentTestCases::testRefCnt, instance));
+		add(BOOST_CLASS_TEST_CASE(&ComponentTestCases::testQuery, instance));
+	}
+};
+
+#endif /* _XCOM_COMPONENT_TEST_H_ */

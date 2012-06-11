@@ -1,0 +1,13 @@
+最近用了用libsoup库，用它来写个HttpServ玩。结果发现性能不行，竟然比nginx/
+apache慢了20倍。拿wireshark一看，发现每个TCP
+回复都要耗时几百毫秒。这就一下子让我想到了Nagle算法（一般的Nagle算法都是延时
+200ms）。于是下载libsoup的库，看代码，果然没有setsockopt。于是设置了
+TCP_NODELAY，结果速度一下子就上去了，与nginx相差无几（WEB主要是耗IO
+，在高并发的时候才能显示出代码优化的好处）。
+   而这个Nagle算法，在Windows上的效果尤其明显。以前使用GIO中的GSocket，也是如此。
+对于初学socket编程的人来说，可能会忘记这里还有个“陷阱”。Nagle
+算法适用于小包、高延迟的场合，而对于要求交互速度的b/s或c/s就不合适了。socket
+在创建的时候，默认都是使用Nagle算法的，这会导致交互速度严重下降，所以需要
+setsockopt函数来设置TCP_NODELAY为1.
+   不过取消了Nagle算法，就会导致TCP碎片增多，效率可能会降低。所以，这也是要有所取舍的。
+

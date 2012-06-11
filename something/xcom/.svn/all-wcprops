@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 21
+/svn/xcom/!svn/ver/38
+END
+configure
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/xcom/!svn/ver/33/configure
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/xcom/!svn/ver/25/Makefile.in
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 29
+/svn/xcom/!svn/ver/1/.project
+END
+AUTHORS
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/xcom/!svn/ver/1/AUTHORS
+END
+depcomp
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/xcom/!svn/ver/1/depcomp
+END
+ChangeLog
+K 25
+svn:wc:ra_dav:version-url
+V 30
+/svn/xcom/!svn/ver/1/ChangeLog
+END
+.cproject
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/xcom/!svn/ver/35/.cproject
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 27
+/svn/xcom/!svn/ver/1/README
+END
+ltmain.sh
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/xcom/!svn/ver/34/ltmain.sh
+END
+config.h.in
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/xcom/!svn/ver/25/config.h.in
+END
+configure.ac
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/xcom/!svn/ver/33/configure.ac
+END
+INSTALL
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/xcom/!svn/ver/1/INSTALL
+END
+COPYING
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/xcom/!svn/ver/1/COPYING
+END
+missing
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/xcom/!svn/ver/1/missing
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/xcom/!svn/ver/14/Makefile.am
+END
+NEWS
+K 25
+svn:wc:ra_dav:version-url
+V 25
+/svn/xcom/!svn/ver/1/NEWS
+END
+aclocal.m4
+K 25
+svn:wc:ra_dav:version-url
+V 32
+/svn/xcom/!svn/ver/25/aclocal.m4
+END
+install-sh
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/xcom/!svn/ver/1/install-sh
+END

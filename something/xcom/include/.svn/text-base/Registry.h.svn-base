@@ -1,0 +1,96 @@
+/**
+ * @file Registry.h
+ * @comment
+ * 
+ * @author niexw
+ */
+
+#ifndef _XCOM_REGISTRY_H_
+#define _XCOM_REGISTRY_H_
+
+#include "Policies.h"
+#include <db.h>
+
+namespace xcom
+{
+
+struct ComponentRecord
+{
+	ClsID const clsid;
+	std::string path;
+
+	ComponentRecord(ClsID const cid) : clsid(cid)
+	{ }
+	ComponentRecord(ClsID const cid, const char *p) : clsid(cid), path(p)
+	{ }
+};
+
+BEGIN_DECLARE_INTERFACE(IRegistry, IUnknown)
+	virtual bool lookup(ComponentRecord &re) = 0;
+//	virtual bool authen(boost::uuid &passwd) = 0;
+	virtual bool addRecord(const ComponentRecord &re) = 0;
+	virtual bool delRecord(const ComponentRecord &re) = 0;
+END_DECLARE_INTERFACE(IRegistry)
+
+
+DEFINE_POLICY(Class, PRegistry)
+{
+protected:
+	DB *db_;
+
+public:
+	PRegistry()
+	{
+		if (db_create(&db_, NULL, 0) != 0)
+			throw std::exception();
+		if (db_->open(db_, NULL, "xcom.db", NULL, DB_HASH, DB_CREATE, 0) != 0)
+			throw std::exception();
+	}
+	~PRegistry()
+	{ db_->close(db_, 0); }
+
+	bool addRecord(const ComponentRecord &re)
+	{
+		DBT key, value;
+		bzero(&key, sizeof(key));
+		bzero(&value, sizeof(value));
+		key.data = (void*)&re.clsid;
+		key.size = sizeof(ClsID);
+		value.data = (void*)re.path.c_str();
+		value.size = re.path.size()+1;
+		return (db_->put(db_, NULL, &key, &value, DB_NOOVERWRITE) == 0) ?
+				true : false;
+	}
+
+	bool lookup(ComponentRecord &re)
+	{
+		DBT key, value;
+		bzero(&key, sizeof(key));
+		bzero(&value, sizeof(value));
+		key.data = (void*)&re.clsid;
+		key.size = sizeof(ClsID);
+		if (db_->get(db_, NULL, &key, &value, 0) != 0)
+			return false;
+		re.path = (char*)value.data;
+		return true;
+	}
+//	virtual bool authen(boost::uuid &passwd) = 0;
+	bool delRecord(const ComponentRecord &re)
+	{
+		DBT key;
+		bzero(&key, sizeof(key));
+		key.data = (void*)&re.clsid;
+		key.size = sizeof(ClsID);
+		return (db_->del(db_, NULL, &key, 0) == 0) ? true : false;
+	}
+};
+
+class Registry : public Component<ComponentTraits
+	< Interfaces<IRegistry>::type
+	, Policies<Registry, PUnknown, PFactory, PRegistry>::type> >
+{ };
+extern ClsID const CLSID_Registry;
+
+
+}; // namespace xcom
+#endif /* _XCOM_REGISTRY_H_ */

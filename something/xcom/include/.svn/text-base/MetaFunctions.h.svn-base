@@ -1,0 +1,177 @@
+/**
+ * @file MetaFunctions.h
+ * @comment
+ * meta functions to deduce the information of component.
+ *
+ * @author niexw
+ */
+
+#ifndef _XCOM_METAFUNCTIONS_H_
+#define _XCOM_METAFUNCTIONS_H_
+
+#include <boost/type_traits/is_base_of.hpp>
+#include <boost/type_traits/is_base_and_derived.hpp>
+#include <boost/mpl/fold.hpp>
+#include <boost/mpl/inherit.hpp>
+#include <boost/mpl/inherit_linearly.hpp>
+#include <boost/mpl/remove_if.hpp>
+#include <boost/mpl/sort.hpp>
+#include <boost/mpl/greater.hpp>
+#include <boost/mpl/bind.hpp>
+#include <boost/mpl/size.hpp>
+#include <boost/mpl/front.hpp>
+#include <boost/mpl/transform.hpp>
+
+#include <boost/mpl/iter_fold.hpp>
+#include <boost/mpl/deref.hpp>
+#include <boost/mpl/find.hpp>
+#include <boost/mpl/distance.hpp>
+
+
+namespace xcom
+{
+namespace meta
+{
+
+using namespace boost;
+using namespace boost::mpl;
+using boost::mpl::size;
+using boost::mpl::bind;
+using boost::mpl::distance;
+using boost::mpl::placeholders::_;
+using boost::mpl::placeholders::_2;
+using boost::mpl::placeholders::_1;
+
+//
+// if I not existed in Seq, add
+//
+template <typename ISeq, typename I>
+struct addIfNotExisted
+{
+	typedef typename if_<typename fold<ISeq, bool_<false>
+					, if_<is_same<_2, I>, bool_<true>, _1> >::type
+			, ISeq
+			, typename push_front<ISeq, I>::type>::type type;
+};
+
+//
+// is T listed in Seq?
+//
+template <typename Seq, typename T>
+struct isBaseOfSequence
+{
+	typedef typename fold<Seq, bool_<false>
+			, if_<is_base_and_derived<T, _2>, bool_<true>, _1> >::type type;
+};
+
+//
+// shrink the interfaces sequence
+//
+template <typename ISeq>
+struct shrinkInterfaces
+{
+	typedef typename fold<ISeq, vector<>
+			, if_<isBaseOfSequence<ISeq, _2>
+				, _1, push_back<_1, _2> > >::type type;
+};
+
+//
+// sort the Sequence according the relation of inheriation
+//
+template <typename Seq>
+struct sortInterfaceSequence
+{
+	typedef typename if_<greater<size<Seq>, int_<1> >
+			, typename sort<Seq, is_base_and_derived<_1, _2> >::type
+			, Seq>::type type;
+};
+
+//
+// get the derived interface of I
+//
+template <typename Seq, typename I>
+struct derivedInSeq
+{
+	typedef typename fold<Seq, vector<>
+			, if_<is_base_of<I, _2>
+				, push_back<_1, _2>, _1> >::type Dv;
+	typedef typename front<Dv>::type type;
+};
+
+//
+// get the derived interface map of declared interface map
+//
+template <typename DSeq, typename ISeq>
+struct derivedMap : transform<DSeq, derivedInSeq<ISeq, _> >
+{ };
+
+template <typename Seq, typename IB>
+struct LinearBase : fold<Seq, IB, bind<_2, _1> >
+{ };
+
+template <typename Seq>
+struct ScatteredBase : reverse_fold<Seq, empty_base, inherit<_2, _1> >
+{ };
+
+//
+// deduce the type of policy in linear inheritances
+//
+template <typename traits, typename P>
+struct PolicyBase
+{
+	typedef typename find<typename traits::PoliciesSeq, P>::type iter;
+	typedef typename iter_fold<typename traits::PoliciesSeq, vector<>
+			, if_<greater<distance<_2, iter>, int_<0> >
+				, push_back<_1, deref<_2> >, _1> >::type Seq1;
+	typedef typename LinearBase<Seq1
+			, typename traits::InheritIBase>::type type;
+};
+
+//
+// type traits embedded in class Component
+//
+template <typename ISeq, typename PSeq>
+struct ComponentTraits
+{
+	typedef ISeq DeclaredISeq;
+	typedef PSeq PoliciesSeq;
+
+	typedef typename addIfNotExisted<ISeq, IUnknown>::type CompletedISeq;
+	typedef typename sortInterfaceSequence
+			<typename shrinkInterfaces
+				<CompletedISeq>::type>::type InheritISeq;
+	typedef typename derivedMap<CompletedISeq, InheritISeq>::type InterfaceMap;
+	typedef typename ScatteredBase<InheritISeq>::type InheritIBase;
+	typedef typename LinearBase<PSeq, InheritIBase>::type InheritBase;
+};
+
+//
+// get the offset of an interface, Seq is InheritISeq
+//
+template <typename Seq, typename I>
+struct OffsetOfInterface
+{
+	static int const value = (long)static_cast
+			<typename derivedInSeq<Seq, I>::type*>
+				((typename ScatteredBase<Seq>::type*)0x8) - 0x8;
+	typedef int value_type;
+};
+
+template <typename Class, template <typename, typename> class Policy>
+struct applyPolicy
+{
+	template <typename B>
+	struct apply
+	{
+		typedef Policy<Class, B> type;
+	};
+};
+
+template <typename Class, typename B>
+struct EmptyPolicy
+{ };
+
+
+}; // namespace meta;
+}; // namespace xcom
+#endif /* _XCOM_METAFUNCTIONS_H_ */

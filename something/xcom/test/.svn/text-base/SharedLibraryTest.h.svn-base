@@ -1,0 +1,95 @@
+/**
+ * @file SharedLibraryTest.h
+ * @comment
+ * 
+ * @author niexw
+ */
+
+#ifndef _XCOM_SHAREDLIBRARY_TEST_H_
+#define _XCOM_SHAREDLIBRARY_TEST_H_
+
+#include "SharedLibrary.h"
+
+using xcom::IID_ISharedLibrary;
+using xcom::ISharedLibrary;
+using xcom::PSharedLibrary;
+
+class C30;
+typedef Interfaces<ISharedLibrary>::type ISeq30;
+typedef Policies<C30, PUnknown, PFactory, PSharedLibrary>::type PSeq30;
+typedef ComponentTraits<ISeq30, PSeq30> Traits30;
+class C30 : public Component<Traits30>
+{ };
+
+DEFINE_CLASS_ID(C30, "f00b0a6f-08b6-44e3-99c4-d13c6d507056");
+
+extern int addx(int x, int y);
+
+class SharedLibraryTestCases
+{
+protected:
+	IFactory *pf;
+	ISharedLibrary *pi;
+
+public:
+	SharedLibraryTestCases() : pf(NULL), pi(NULL)
+	{ }
+
+	void testCreate()
+	{
+		IFactory* pf = C30::getObjectFactory();
+		BOOST_CHECK(pf != NULL);
+
+		ClsID const* cid = C30::getClassID();
+		BOOST_CHECK((*cid == CLSID_C30));
+
+		long ret = pf->createInstance(NULL, IID_ISharedLibrary, (void**)&pi);
+		BOOST_CHECK((ret == SUCCESS));
+		BOOST_CHECK((pi != NULL));
+	}
+
+	void testLoad()
+	{
+		long ret = pi->load("libm.so");
+		BOOST_CHECK(ret == SUCCESS);
+	}
+
+	void testSymbol()
+	{
+		typedef double (*cosine)(double);
+		cosine c1 = (cosine)pi->symbol("cos");
+		BOOST_CHECK(c1 != NULL);
+		BOOST_CHECK(c1(0) == 1);
+	}
+
+	void testUnload()
+	{
+		long ret = pi->unload();
+		BOOST_CHECK(ret);
+		BOOST_CHECK(!pi->isLoaded());
+
+		long cnt = pi->release();
+		BOOST_CHECK(cnt == 0);
+	}
+
+	void testLibtest_la()
+	{
+		BOOST_CHECK(addx(5, 2) == 8);
+	}
+};
+
+class SharedLibraryTestSuite : public test_suite
+{
+public:
+	SharedLibraryTestSuite() : test_suite("RegistryTestSuite")
+	{
+		boost::shared_ptr<SharedLibraryTestCases> instance(new SharedLibraryTestCases());
+		add(BOOST_CLASS_TEST_CASE(&SharedLibraryTestCases::testCreate, instance));
+		add(BOOST_CLASS_TEST_CASE(&SharedLibraryTestCases::testLoad, instance));
+		add(BOOST_CLASS_TEST_CASE(&SharedLibraryTestCases::testSymbol, instance));
+		add(BOOST_CLASS_TEST_CASE(&SharedLibraryTestCases::testUnload, instance));
+		add(BOOST_CLASS_TEST_CASE(&SharedLibraryTestCases::testLibtest_la, instance));
+	}
+};
+
+#endif /* _XCOM_SHAREDLIBRARY_TEST_H_ */
