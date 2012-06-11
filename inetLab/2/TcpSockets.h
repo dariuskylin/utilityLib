@@ -29,7 +29,7 @@ class TcpSockets : public Socket
         int read(char *buf,size_t size);
         int write(const char *buf,size_t size);
         //Bind the sockaddr_in struct
-        void bindAddress(const InetAddress &addr);
+        int bindAddress(const InetAddress &addr);
         //Set socket to be blocked or non-blocked
         void setNonblock();
         //Enable/disable Nagle's algorithm

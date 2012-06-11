@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  test.cc
+ *       Filename:  TcpServer.h
  *
  *    Description:  
  *
  *        Version:  1.0
- *        Created:  06/11/2012 12:17:20 AM
+ *        Created:  06/11/2012 01:06:58 AM
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -15,14 +15,18 @@
  *
  * =====================================================================================
  */
-#include"InetAddr.h"
-#include"Sockets.h"
+#ifndef _NDSL_TCPSERVER_H
+#define _NDSL_TCPSERVER_H
 #include"TcpSockets.h"
-#include"TcpClient.h"
-#include"TcpServer.h"
-#include<iostream>
-using namespace std;
-int main()
+#include"InetAddr.h"
+class TcpServer : public TcpSockets
 {
-    return 0;
-}
+    public:
+        TcpServer();
+        ~TcpServer();
+        int bind(InetAddress &addr);
+        int listen(int listenQ = 20);
+        int accept(InetAddress &peer);
+};
+
+#endif

@@ -50,7 +50,7 @@ int TcpSockets::write(const char* buf,size_t size)
     int retval = ::write(fd_,buf,size);
     return retval;
 }
-void TcpSockets::bindAddress(const InetAddress &addr)
+int TcpSockets::bindAddress(const InetAddress &addr)
 {
     int retval = ::bind(fd_,(struct sockaddr *)(&(addr.getSockAddrInet())),
             sizeof(addr));
@@ -58,6 +58,7 @@ void TcpSockets::bindAddress(const InetAddress &addr)
     {
         cout<<"bind() error!"<<endl;
     }
+    return retval;
 }
 
 void TcpSockets::setNonblock()

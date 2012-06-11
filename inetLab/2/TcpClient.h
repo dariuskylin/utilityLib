@@ -1,12 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  test.cc
+ *       Filename:  TcpClient.h
  *
  *    Description:  
  *
  *        Version:  1.0
- *        Created:  06/11/2012 12:17:20 AM
+ *        Created:  06/11/2012 01:01:43 AM
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -15,14 +15,15 @@
  *
  * =====================================================================================
  */
-#include"InetAddr.h"
-#include"Sockets.h"
+#ifndef _NDSL_TCPCLIENT_H
+#define _NDSL_TCPCLIENT_H
 #include"TcpSockets.h"
-#include"TcpClient.h"
-#include"TcpServer.h"
-#include<iostream>
-using namespace std;
-int main()
+#include"InetAddr.h"
+class TcpClient : public TcpSockets
 {
-    return 0;
-}
+    public:
+        TcpClient();
+        ~TcpClient();
+        int connect(InetAddress &addr);
+};
+#endif
