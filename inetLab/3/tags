@@ -1,0 +1,98 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Callback	Thread.h	/^    typedef void* (*Callback)(void *);$/;"	t	class:Thread	access:public
+Mutex	Mutex.h	/^        Mutex()$/;"	f	class:Mutex	access:public	signature:()
+Mutex	Mutex.h	/^class Mutex$/;"	c
+Mutex::Mutex	Mutex.h	/^        Mutex()$/;"	f	class:Mutex	access:public	signature:()
+Mutex::getPthreadMutex	Mutex.h	/^        pthread_mutex_t* getPthreadMutex()$/;"	f	class:Mutex	access:public	signature:()
+Mutex::lock	Mutex.h	/^        void lock()$/;"	f	class:Mutex	access:public	signature:()
+Mutex::mutex_	Mutex.h	/^        pthread_mutex_t mutex_;$/;"	m	class:Mutex	access:private
+Mutex::unlock	Mutex.h	/^        void unlock()$/;"	f	class:Mutex	access:public	signature:()
+Mutex::~Mutex	Mutex.h	/^        ~Mutex()$/;"	f	class:Mutex	access:public	signature:()
+MutexGuard	Mutex.h	/^        explicit MutexGuard(Mutex &mutex) : mutex_(mutex)$/;"	f	class:MutexGuard	access:public	signature:(Mutex &mutex)
+MutexGuard	Mutex.h	/^class MutexGuard $/;"	c
+MutexGuard::MutexGuard	Mutex.h	/^        explicit MutexGuard(Mutex &mutex) : mutex_(mutex)$/;"	f	class:MutexGuard	access:public	signature:(Mutex &mutex)
+MutexGuard::mutex_	Mutex.h	/^        Mutex &mutex_;$/;"	m	class:MutexGuard	access:private
+MutexGuard::~MutexGuard	Mutex.h	/^        ~MutexGuard()$/;"	f	class:MutexGuard	access:public	signature:()
+Thread	Thread.cc	/^Thread::Thread(Callback f):func(f)$/;"	f	class:Thread	signature:(Callback f)
+Thread	Thread.h	/^        Thread(Callback f);$/;"	p	class:Thread	access:public	signature:(Callback f)
+Thread	Thread.h	/^class Thread$/;"	c
+Thread::Callback	Thread.h	/^    typedef void* (*Callback)(void *);$/;"	t	class:Thread	access:public
+Thread::Thread	Thread.cc	/^Thread::Thread(Callback f):func(f)$/;"	f	class:Thread	signature:(Callback f)
+Thread::Thread	Thread.h	/^        Thread(Callback f);$/;"	p	class:Thread	access:public	signature:(Callback f)
+Thread::detach	Thread.cc	/^void Thread::detach()$/;"	f	class:Thread	signature:()
+Thread::detach	Thread.h	/^        void detach();$/;"	p	class:Thread	access:public	signature:()
+Thread::func	Thread.h	/^        Callback func;$/;"	m	class:Thread	access:protected
+Thread::getTid	Thread.h	/^        pthread_t getTid() const$/;"	f	class:Thread	access:public	signature:() const
+Thread::join	Thread.cc	/^void Thread::join()$/;"	f	class:Thread	signature:()
+Thread::join	Thread.h	/^        void join();$/;"	p	class:Thread	access:public	signature:()
+Thread::run	Thread.h	/^        void run();$/;"	p	class:Thread	access:public	signature:()
+Thread::tid_	Thread.h	/^        pthread_t tid_;$/;"	m	class:Thread	access:protected
+Thread::~Thread	Thread.cc	/^Thread::~Thread()$/;"	f	class:Thread	signature:()
+Thread::~Thread	Thread.h	/^        ~Thread();$/;"	p	class:Thread	access:public	signature:()
+ThreadPool	ThreadPool.cc	/^ThreadPool::ThreadPool()$/;"	f	class:ThreadPool	signature:()
+ThreadPool	ThreadPool.h	/^        ThreadPool();$/;"	p	class:ThreadPool	access:public	signature:()
+ThreadPool	ThreadPool.h	/^class ThreadPool$/;"	c
+ThreadPool::ThreadPool	ThreadPool.cc	/^ThreadPool::ThreadPool()$/;"	f	class:ThreadPool	signature:()
+ThreadPool::ThreadPool	ThreadPool.h	/^        ThreadPool();$/;"	p	class:ThreadPool	access:public	signature:()
+ThreadPool::add	ThreadPool.cc	/^void ThreadPool::add(Thread *t)$/;"	f	class:ThreadPool	signature:(Thread *t)
+ThreadPool::add	ThreadPool.h	/^        void add(Thread *t);$/;"	p	class:ThreadPool	access:public	signature:(Thread *t)
+ThreadPool::addMessage	ThreadPool.cc	/^void ThreadPool::addMessage(const string message)$/;"	f	class:ThreadPool	signature:(const string message)
+ThreadPool::addMessage	ThreadPool.h	/^        void addMessage(const string message);$/;"	p	class:ThreadPool	access:public	signature:(const string message)
+ThreadPool::getMessage	ThreadPool.cc	/^string ThreadPool::getMessage() $/;"	f	class:ThreadPool	signature:()
+ThreadPool::getMessage	ThreadPool.h	/^        string getMessage();$/;"	p	class:ThreadPool	access:public	signature:()
+ThreadPool::getMessageQueue	ThreadPool.cc	/^list<string &> ThreadPool::getMessageQueue() const$/;"	f	class:ThreadPool	signature:() const
+ThreadPool::getMessageQueue	ThreadPool.h	/^        list<string>& getMessageQueue() const;$/;"	p	class:ThreadPool	access:public	signature:() const
+ThreadPool::messageMutex_	ThreadPool.h	/^        Mutex messageMutex_;$/;"	m	class:ThreadPool	access:private
+ThreadPool::messages	ThreadPool.h	/^        list<string> messages;$/;"	m	class:ThreadPool	access:private
+ThreadPool::remove	ThreadPool.cc	/^void ThreadPool::remove(Thread *t)$/;"	f	class:ThreadPool	signature:(Thread *t)
+ThreadPool::remove	ThreadPool.h	/^        void remove(Thread *t);$/;"	p	class:ThreadPool	access:public	signature:(Thread *t)
+ThreadPool::size_threads	ThreadPool.cc	/^size_t ThreadPool::size_threads() const$/;"	f	class:ThreadPool	signature:() const
+ThreadPool::size_threads	ThreadPool.h	/^        size_t size_threads() const;$/;"	p	class:ThreadPool	access:public	signature:() const
+ThreadPool::threads	ThreadPool.h	/^        list<Thread *> threads;$/;"	m	class:ThreadPool	access:private
+ThreadPool::threadsMutex_	ThreadPool.h	/^        Mutex threadsMutex_;$/;"	m	class:ThreadPool	access:private
+ThreadPool::~ThreadPool	ThreadPool.cc	/^ThreadPool::~ThreadPool()$/;"	f	class:ThreadPool	signature:()
+ThreadPool::~ThreadPool	ThreadPool.h	/^        ~ThreadPool();$/;"	p	class:ThreadPool	access:public	signature:()
+_NDSL_MUTEX_H	Mutex.h	19;"	d
+_NDSL_THREADPOOL_H	ThreadPool.h	19;"	d
+_NDSL_THREAD_H	Thread.h	19;"	d
+add	ThreadPool.cc	/^void ThreadPool::add(Thread *t)$/;"	f	class:ThreadPool	signature:(Thread *t)
+add	ThreadPool.h	/^        void add(Thread *t);$/;"	p	class:ThreadPool	access:public	signature:(Thread *t)
+addMessage	ThreadPool.cc	/^void ThreadPool::addMessage(const string message)$/;"	f	class:ThreadPool	signature:(const string message)
+addMessage	ThreadPool.h	/^        void addMessage(const string message);$/;"	p	class:ThreadPool	access:public	signature:(const string message)
+detach	Thread.cc	/^void Thread::detach()$/;"	f	class:Thread	signature:()
+detach	Thread.h	/^        void detach();$/;"	p	class:Thread	access:public	signature:()
+func	Thread.h	/^        Callback func;$/;"	m	class:Thread	access:protected
+getMessage	ThreadPool.cc	/^string ThreadPool::getMessage() $/;"	f	class:ThreadPool	signature:()
+getMessage	ThreadPool.h	/^        string getMessage();$/;"	p	class:ThreadPool	access:public	signature:()
+getMessageQueue	ThreadPool.cc	/^list<string &> ThreadPool::getMessageQueue() const$/;"	f	class:ThreadPool	signature:() const
+getMessageQueue	ThreadPool.h	/^        list<string>& getMessageQueue() const;$/;"	p	class:ThreadPool	access:public	signature:() const
+getPthreadMutex	Mutex.h	/^        pthread_mutex_t* getPthreadMutex()$/;"	f	class:Mutex	access:public	signature:()
+getTid	Thread.h	/^        pthread_t getTid() const$/;"	f	class:Thread	access:public	signature:() const
+join	Thread.cc	/^void Thread::join()$/;"	f	class:Thread	signature:()
+join	Thread.h	/^        void join();$/;"	p	class:Thread	access:public	signature:()
+lock	Mutex.h	/^        void lock()$/;"	f	class:Mutex	access:public	signature:()
+main	test.cc	/^int main()$/;"	f	signature:()
+messageMutex_	ThreadPool.h	/^        Mutex messageMutex_;$/;"	m	class:ThreadPool	access:private
+messages	ThreadPool.h	/^        list<string> messages;$/;"	m	class:ThreadPool	access:private
+mutex_	Mutex.h	/^        Mutex &mutex_;$/;"	m	class:MutexGuard	access:private
+mutex_	Mutex.h	/^        pthread_mutex_t mutex_;$/;"	m	class:Mutex	access:private
+remove	ThreadPool.cc	/^void ThreadPool::remove(Thread *t)$/;"	f	class:ThreadPool	signature:(Thread *t)
+remove	ThreadPool.h	/^        void remove(Thread *t);$/;"	p	class:ThreadPool	access:public	signature:(Thread *t)
+run	Thread.h	/^        void run();$/;"	p	class:Thread	access:public	signature:()
+size_threads	ThreadPool.cc	/^size_t ThreadPool::size_threads() const$/;"	f	class:ThreadPool	signature:() const
+size_threads	ThreadPool.h	/^        size_t size_threads() const;$/;"	p	class:ThreadPool	access:public	signature:() const
+threads	ThreadPool.h	/^        list<Thread *> threads;$/;"	m	class:ThreadPool	access:private
+threadsMutex_	ThreadPool.h	/^        Mutex threadsMutex_;$/;"	m	class:ThreadPool	access:private
+tid_	Thread.h	/^        pthread_t tid_;$/;"	m	class:Thread	access:protected
+unlock	Mutex.h	/^        void unlock()$/;"	f	class:Mutex	access:public	signature:()
+~Mutex	Mutex.h	/^        ~Mutex()$/;"	f	class:Mutex	access:public	signature:()
+~MutexGuard	Mutex.h	/^        ~MutexGuard()$/;"	f	class:MutexGuard	access:public	signature:()
+~Thread	Thread.cc	/^Thread::~Thread()$/;"	f	class:Thread	signature:()
+~Thread	Thread.h	/^        ~Thread();$/;"	p	class:Thread	access:public	signature:()
+~ThreadPool	ThreadPool.cc	/^ThreadPool::~ThreadPool()$/;"	f	class:ThreadPool	signature:()
+~ThreadPool	ThreadPool.h	/^        ~ThreadPool();$/;"	p	class:ThreadPool	access:public	signature:()
