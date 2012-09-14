@@ -1,0 +1,19 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+SERVER_PORT	echo.c	12;"	d	file:
+accept_callback	echo.c	/^void accept_callback(int fd,$/;"	f	signature:(int fd, short ev, void *arg)
+buf_error_callback	echo.c	/^void buf_error_callback(struct bufferevent *bev,$/;"	f	signature:(struct bufferevent *bev, short what, void *arg)
+buf_ev	echo.c	/^  struct bufferevent *buf_ev;$/;"	m	struct:client	typeref:struct:client::bufferevent	file:	access:public
+buf_read_callback	echo.c	/^void buf_read_callback(struct bufferevent *incoming,$/;"	f	signature:(struct bufferevent *incoming, void *arg)
+buf_write_callback	echo.c	/^void buf_write_callback(struct bufferevent *bev,$/;"	f	signature:(struct bufferevent *bev, void *arg)
+client	echo.c	/^struct client {$/;"	s	file:
+client::buf_ev	echo.c	/^  struct bufferevent *buf_ev;$/;"	m	struct:client	typeref:struct:client::bufferevent	file:	access:public
+client::fd	echo.c	/^  int fd;$/;"	m	struct:client	file:	access:public
+debug	echo.c	/^int debug = 0;$/;"	v
+fd	echo.c	/^  int fd;$/;"	m	struct:client	file:	access:public
+main	echo.c	/^int main(int argc,$/;"	f	signature:(int argc, char **argv)
+setnonblock	echo.c	/^int setnonblock(int fd)$/;"	f	signature:(int fd)
