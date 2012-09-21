@@ -338,4 +338,5 @@ set cursorline
 
 "设置列线
 set colorcolumn=70
-colorscheme murphy
+set t_Co=256
+colorscheme candycode
