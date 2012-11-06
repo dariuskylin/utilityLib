@@ -21,7 +21,7 @@ set backspace=indent,eol,start
 if has("vms")
   set nobackup		" do not keep a backup file, use versions instead
 else
-  set backup		" keep a backup file
+  set nobackup		" keep a backup file
 endif
 set history=50		" keep 50 lines of command line history
 set ruler		" show the cursor position all the time
@@ -337,6 +337,17 @@ set cursorline
 "highlight CursorLine guibg=lightblue ctermbg=lightred
 
 "设置列线
-set colorcolumn=70
+set colorcolumn=90
 set t_Co=256
-colorscheme candycode
+"colorscheme colorful256
+"colorscheme solarized
+
+"setup solarized
+let g:solarized_termcolors=256
+syntax enable                                                                         
+if has('gui_running')
+        set background=light
+else
+        set background=dark
+endif
+colorscheme solarized
