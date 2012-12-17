@@ -1,0 +1,5 @@
+不完整类型（incomplete type），也就是说当被删除的对象的内存布局还未知
+不完整的类型是指那些已经声明但是还未定义的类型
+
+
+如checked_delete下的eg1实例，试图delete一个指向不完整类型to_be_deleted的指针，从而导致未定义的行为。这里需要注意的是，to_be_deleted是在deleter.h中前置声明的；deleter.cpp包含了deleter.hpp，但是没有包含to_be_deleted.hpp；另外to_be_deleted.hpp中为to_be_deleted定义了一个非平凡析构函数。这种麻烦很容易出现，尤其是在使用智能指针的时候。这种情况下需要做的就是在调用delete是确保类型是完整的，而这也正是checked_delete所做的。

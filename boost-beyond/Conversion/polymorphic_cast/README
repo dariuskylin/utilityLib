@@ -1,0 +1,9 @@
+转换过程中，要么转换操作成功，返回一个有效的引用；要么转换操作失败，返回一个std::bad_cast异常.
+
+除了在转换操作失败时总是抛出一个std::bad_cast类型的异常之外，polymorphic_cast的使用方法类似于dynamic_cast;而这也正是polymorphic_cast的目的，它的出现就是为了解决dynamic_cast对引用类型和指针类型处理结果的不一致问题：dynamic_cast对引用操作，成功则返回，失败抛std::bad_cast异常；dynamic_cast对指针操作，成功时返回，失败却也返回，不过返回的是空指针。按照c++标准的建议，希望不管是操作引用还是指针，都能一致，都能失败的时候抛异常，因此polymorphic_cast应运而生！
+
+polymorphic_cast的另一个特性就是它是一个函数，必要时可以进行重载。
+
+polymorphic_cast函数没有针对引用类型的版本。原因在于dynamic_cast函数已经实现了该功能。
+
+适用于使用dynamic_cast函数或者polymorphic_cast函数的两种典型场合包括：从基类向派生类的向下转型和交叉转型，即从一个基类到另一个基类的转型。

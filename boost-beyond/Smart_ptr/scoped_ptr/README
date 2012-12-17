@@ -1,0 +1,12 @@
+In brief introduction：
+
+1、遵守"resource acquisition is initialization" 规则，scoped_ptr对象初始化的时候指针赋值，scoped_ptr对象析构的时候delete掉<T>对象；
+2、继承自nocopyable，因此赋值操作和拷贝构造被禁止，不允许智能指针复制；
+3、不需要手动删除，因为scoped_ptr的生命周期结束时，自动调用scoped_ptr的析构函数，在其析构函数内，会调用<T>的delete操作；
+4、一个scoped_ptr只能对应一个T（不能复制），因此也就没有owner的问题
+
+使用scoped_ptr，可以把它当做一个build-in的pointer来使用~
+
+和auto_ptr的区别：
+scoped_ptr和auto_ptr几乎一样，它们之间的只要区别在于它们对所有权的处理方式上。
+auto_ptr在复制时会使源auto_ptr自动的交出owner所有权，使源auto_ptr变为空指针；而scoped_ptr则不允许复制。
