@@ -351,3 +351,9 @@ else
         set background=dark
 endif
 colorscheme solarized
+colorscheme molokai
+"显示当前文件名
+":help statusline
+set statusline+=%F
+set modeline
+set ls=2
